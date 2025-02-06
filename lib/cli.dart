@@ -53,15 +53,32 @@ class PersonRepo implements Repository<Person> {
   List<Person> getAll() => _persons;
 
   @override
-  Person? getById(String id) => _persons.firstWhere((p) => p.idNum == id);
+  Person getById(String id) => _persons.firstWhere((p) => p.idNum == id);
 
   @override
   void update(Person person) {
     var index = _persons.indexWhere((p) => p.idNum == person.idNum);
     if (index != -1) _persons[index] = person;
   }
+}
 
+class VehicleRepo implements Repository<Vehicle> {
+  final List<Vehicle> _vehicles = [];
 
+  @override
+  void add(Vehicle vehicle) => _vehicles.add(vehicle);
+
+  @override
+  List<Vehicle> getAll() => _vehicles;
+
+  @override
+  Vehicle getById(String id) => _vehicles.firstWhere((v) => v.regNum == id);
+
+  @override
+  void update(Vehicle vehicle){
+    var index = _vehicles.indexWhere((v) => v.regNum == vehicle.regNum);
+    if (index != -1) _vehicles[index] = vehicle;
+  }
 }
 
 void main(){
