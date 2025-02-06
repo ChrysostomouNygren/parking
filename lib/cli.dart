@@ -2,6 +2,7 @@ import 'dart:io';
 
 class Person {
   final String name;
+  //make it so the idNum must be 10 characters
   final String idNum;
 
   Person({required this.name, required this.idNum});
@@ -9,6 +10,7 @@ class Person {
 
 class Vehicle {
   final String regNum;
+  //car, bike, truck, lorry etc
   final String vehicleType;
   final Person owner;
 
