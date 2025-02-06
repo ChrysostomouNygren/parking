@@ -100,6 +100,25 @@ class ParkingSpaceRepo implements Repository<ParkingSpace> {
   }
 }
 
+class ParkingRepo implements Repository<Parking> {
+  final List<Parking> _parkings = [];
+
+  @override
+  void add(Parking parking) => _parkings.add(parking);
+
+  @override
+  List<Parking> getAll() => _parkings;
+
+  @override
+  Parking getById(String id) => _parkings.firstWhere((p) => p.vehicle.regNum == id);
+
+  @override
+  void update(Parking parking){
+    var index = _parkings.indexWhere((p) => p.vehicle.regNum == parking.vehicle.regNum);
+    if (index != -1) _parkings[index] = parking;
+  }
+}
+
 void main(){
   stdout.writeln('type something');
   final input = stdin.readLineSync();
