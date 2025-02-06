@@ -37,6 +37,33 @@ Parking({
 });
 }
 
+abstract class Repository<T> {
+  void add(T item);
+  List<T> getAll();
+  T? getById(String id);
+  void update(T item);
+}
+
+class PersonRepo implements Repository<Person> {
+  final List<Person> _persons = [];
+  @override
+  void add(Person person) => _persons.add(person);
+
+  @override
+  List<Person> getAll() => _persons;
+
+  @override
+  Person? getById(String id) => _persons.firstWhere((p) => p.idNum == id);
+
+  @override
+  void update(Person person) {
+    var index = _persons.indexWhere((p) => p.idNum == person.idNum);
+    if (index != -1) _persons[index] = person;
+  }
+
+
+}
+
 void main(){
   stdout.writeln('type something');
   final input = stdin.readLineSync();
