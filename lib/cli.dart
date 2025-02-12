@@ -155,6 +155,7 @@ switch (choice) {
     String vehicleType = stdin.readLineSync()!;
     print('Add owners person number');
     String owenerId = stdin.readLineSync()!;
+
     var owner = personRepo.getById(owenerId);
     if (owner != null){
       vehicleRepo.add(Vehicle(regNum: regNum, vehicleType: vehicleType, owner: owner));
@@ -169,13 +170,37 @@ switch (choice) {
     String address = stdin.readLineSync()!;
     print('Add price per hour:');
     double pricePerH = double.parse(stdin.readLineSync()!);
+
     parkingSpaceRepo.add(ParkingSpace(id: id, address: address, pricePerH: pricePerH));
+    break;
+  case '4':
+    print('Vehicles registration number:');
+    String regNum = stdin.readLineSync()!;
+    print('Parkingspace ID:');
+    String spaceId = stdin.readLineSync()!;
+    print('Amount of hours to use the parkingspot:');
+    int hours = int.parse(stdin.readLineSync()!);
+
+
+    var vehicle = vehicleRepo.getById(regNum);
+    var parkingSpace = parkingSpaceRepo.getById(spaceId);
+    if (vehicle != null && parkingSpace != null){
+      parkingRepo.add(Parking(vehicle: vehicle, parkingSpace: parkingSpace, startTime: DateTime.now(), stopTime: DateTime.now().add(Duration(hours: hours))));
+    } else {
+      print('Vehicle and/or parkingspot was not found');
+    }
+    break;
+
+  case '5':
+    for (var p in parkingRepo.getAll()){
+      print('${p.vehicle.regNum} is parked at ${p.parkingSpace.address} from ${p.startTime} to ${p.stopTime}');
+    }
+    break;
+  case '6':
+    return;
+  default:
+    print('Invalid choice');
 }
 
 }
-
-
-  // stdout.writeln('type something');
-  // final input = stdin.readLineSync();
-  // stdout.writeln('you typed: $input');
 }
