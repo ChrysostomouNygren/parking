@@ -19,10 +19,10 @@ class Vehicle {
 
 class ParkingSpace {
   String id;
-  String adress;
+  String address;
   double pricePerH;
 
-  ParkingSpace({required this.id, required this.adress, required this.pricePerH});
+  ParkingSpace({required this.id, required this.address, required this.pricePerH});
 }
 
 class Parking {
@@ -122,7 +122,60 @@ class ParkingRepo implements Repository<Parking> {
 }
 
 void main(){
-  stdout.writeln('type something');
-  final input = stdin.readLineSync();
-  stdout.writeln('you typed: $input');
+var personRepo = PersonRepo();
+var vehicleRepo = VehicleRepo();
+var parkingSpaceRepo = ParkingSpaceRepo();
+var parkingRepo = ParkingRepo();
+
+while(true){
+
+
+print('Choose operation:');
+print('1. Add person');
+print('2. Add vehicle');
+print('3. Add parking spot');
+print('4. Start parking');
+print('5. List all parkings');
+print('6. Exit');
+
+var choice = stdin.readLineSync();
+
+switch (choice) {
+  case '1':
+    print('Add name:');
+    String name = stdin.readLineSync()!;
+    print('Add person number:');
+    String id = stdin.readLineSync()!;
+    personRepo.add(Person(name: name, idNum: id));
+    break;
+  case '2':
+    print('Add registration number:');
+    String regNum = stdin.readLineSync()!;
+    print('Add vehicle type:');
+    String vehicleType = stdin.readLineSync()!;
+    print('Add owners person number');
+    String owenerId = stdin.readLineSync()!;
+    var owner = personRepo.getById(owenerId);
+    if (owner != null){
+      vehicleRepo.add(Vehicle(regNum: regNum, vehicleType: vehicleType, owner: owner));
+    } else {
+      print('Owner not found');
+    }
+    break;
+  case '3':
+    print('Add parking space ID:');
+    String id = stdin.readLineSync()!;
+    print('Add address:');
+    String address = stdin.readLineSync()!;
+    print('Add price per hour:');
+    double pricePerH = double.parse(stdin.readLineSync()!);
+    parkingSpaceRepo.add(ParkingSpace(id: id, address: address, pricePerH: pricePerH));
+}
+
+}
+
+
+  // stdout.writeln('type something');
+  // final input = stdin.readLineSync();
+  // stdout.writeln('you typed: $input');
 }
