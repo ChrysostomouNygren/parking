@@ -1,8 +1,7 @@
 import 'dart:io';
 
 class Person {
-  final String name;
-  //make it so the idNum must be 10 characters
+  String name;
   final String idNum;
 
   Person({required this.name, required this.idNum});
@@ -11,8 +10,8 @@ class Person {
 class Vehicle {
   final String regNum;
   //car, bike, truck, lorry etc
-  final String vehicleType;
-  final Person owner;
+  String vehicleType;
+  Person owner;
 
   Vehicle({required this.regNum, required this.vehicleType, required this.owner});
 }
@@ -62,6 +61,9 @@ class PersonRepo implements Repository<Person> {
     var index = _persons.indexWhere((p) => p.idNum == person.idNum);
     if (index != -1) _persons[index] = person;
   }
+
+  @override
+  void delete(String id) => _persons.removeWhere((p) => p.idNum == id);
 }
 
 class VehicleRepo implements Repository<Vehicle> {
@@ -81,6 +83,9 @@ class VehicleRepo implements Repository<Vehicle> {
     var index = _vehicles.indexWhere((v) => v.regNum == vehicle.regNum);
     if (index != -1) _vehicles[index] = vehicle;
   }
+
+  @override
+  void delete(String id) => _vehicles.removeWhere((v) => v.regNum == id);
 }
 
 class ParkingSpaceRepo implements Repository<ParkingSpace> {
@@ -100,6 +105,9 @@ class ParkingSpaceRepo implements Repository<ParkingSpace> {
     var index = _parkingSpaces.indexWhere((p) => p.id == parkingSpace.id);
     if (index != -1) _parkingSpaces[index] = parkingSpace;
   }
+
+  @override
+  void delete(String id) => _parkingSpaces.removeWhere((p) => p.id == id);
 }
 
 class ParkingRepo implements Repository<Parking> {
@@ -119,6 +127,9 @@ class ParkingRepo implements Repository<Parking> {
     var index = _parkings.indexWhere((p) => p.vehicle.regNum == parking.vehicle.regNum);
     if (index != -1) _parkings[index] = parking;
   }
+
+  @override
+  void delete(String id) => _parkings.removeWhere((p) => p.vehicle.regNum == id);
 }
 
 void main(){
@@ -136,7 +147,12 @@ print('2. Add vehicle');
 print('3. Add parking spot');
 print('4. Start parking');
 print('5. List all parkings');
-print('6. Exit');
+print('6. Update person');
+print('7. Update vehicle');
+print('8. Remove person');
+print('9. Remove vehicle');
+print('10. Remove parking');
+print('11. Exit');
 
 var choice = stdin.readLineSync();
 
@@ -184,19 +200,53 @@ switch (choice) {
 
     var vehicle = vehicleRepo.getById(regNum);
     var parkingSpace = parkingSpaceRepo.getById(spaceId);
-    if (vehicle != null && parkingSpace != null){
-      parkingRepo.add(Parking(vehicle: vehicle, parkingSpace: parkingSpace, startTime: DateTime.now(), stopTime: DateTime.now().add(Duration(hours: hours))));
-    } else {
-      print('Vehicle and/or parkingspot was not found');
-    }
-    break;
+    parkingRepo.add(Parking(vehicle: vehicle, parkingSpace: parkingSpace, startTime: DateTime.now(), stopTime: DateTime.now().add(Duration(hours: hours))));
+      break;
 
   case '5':
     for (var p in parkingRepo.getAll()){
       print('${p.vehicle.regNum} is parked at ${p.parkingSpace.address} from ${p.startTime} to ${p.stopTime}');
     }
     break;
+
   case '6':
+    print('ID number of the person to update:');
+    String id = stdin.readLineSync()!;
+    var person = personRepo.getById(id);
+    if (person != null){
+      print('Add new name:');
+      String newName = stdin.readLineSync()!;
+      person.name = newName;
+    }
+    break;
+  case '7':
+    print('Registration number of the vehicle to update:');
+    String regNum = stdin.readLineSync()!;
+    var vehicle = vehicleRepo.getById(regNum);
+    if (vehicle != null){
+     print('New vehicle type:');
+     String newType = stdin.readLineSync()!;
+     vehicle.vehicleType = newType;
+     vehicleRepo.update(vehicle);
+    } else {
+      print('Vehicle was not found.');
+    }
+  case '8':
+    print('Personal number for the person to remove:');
+    String id = stdin.readLineSync()!;
+    personRepo.delete(id);
+    break;
+  case '9':
+    print('Registration number for the vehicle to remove:');
+    String regNum = stdin.readLineSync()!;
+    vehicleRepo.delete(regNum);
+    break;
+  case '10':
+    print('Registration number for the vehicle to remove from parking:');
+    String regNum = stdin.readLineSync()!;
+    parkingRepo.delete(regNum);
+    break;
+  case '11':
     return;
   default:
     print('Invalid choice');
