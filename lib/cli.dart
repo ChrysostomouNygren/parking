@@ -54,7 +54,13 @@ class PersonRepo implements Repository<Person> {
   List<Person> getAll() => _persons;
 
   @override
-  Person getById(String id) => _persons.firstWhere((p) => p.idNum == id);
+  Person? getById(String id) {
+    try {
+      return _persons.firstWhere((p) => p.idNum == id);
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
   void update(Person person) {
@@ -62,7 +68,6 @@ class PersonRepo implements Repository<Person> {
     if (index != -1) _persons[index] = person;
   }
 
-  @override
   void delete(String id) => _persons.removeWhere((p) => p.idNum == id);
 }
 
@@ -76,7 +81,13 @@ class VehicleRepo implements Repository<Vehicle> {
   List<Vehicle> getAll() => _vehicles;
 
   @override
-  Vehicle getById(String id) => _vehicles.firstWhere((v) => v.regNum == id);
+  Vehicle? getById(String id) {
+    try {
+      return _vehicles.firstWhere((p) => p.regNum == id);
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
   void update(Vehicle vehicle){
@@ -84,7 +95,6 @@ class VehicleRepo implements Repository<Vehicle> {
     if (index != -1) _vehicles[index] = vehicle;
   }
 
-  @override
   void delete(String id) => _vehicles.removeWhere((v) => v.regNum == id);
 }
 
@@ -98,7 +108,14 @@ class ParkingSpaceRepo implements Repository<ParkingSpace> {
   List<ParkingSpace> getAll() => _parkingSpaces;
 
   @override
-  ParkingSpace getById(String id) => _parkingSpaces.firstWhere((p) => p.id == id);
+  //ParkingSpace getById(String id) => _parkingSpaces.firstWhere((p) => p.id == id);
+  ParkingSpace? getById(String id) {
+    try {
+      return _parkingSpaces.firstWhere((p) => p.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
   void update(ParkingSpace parkingSpace){
@@ -120,7 +137,13 @@ class ParkingRepo implements Repository<Parking> {
   List<Parking> getAll() => _parkings;
 
   @override
-  Parking getById(String id) => _parkings.firstWhere((p) => p.vehicle.regNum == id);
+  Parking? getById(String id) {
+    try {
+      return _parkings.firstWhere((p) => p.vehicle.regNum == id);
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
   void update(Parking parking){
@@ -128,7 +151,6 @@ class ParkingRepo implements Repository<Parking> {
     if (index != -1) _parkings[index] = parking;
   }
 
-  @override
   void delete(String id) => _parkings.removeWhere((p) => p.vehicle.regNum == id);
 }
 
@@ -200,7 +222,7 @@ switch (choice) {
 
     var vehicle = vehicleRepo.getById(regNum);
     var parkingSpace = parkingSpaceRepo.getById(spaceId);
-    parkingRepo.add(Parking(vehicle: vehicle, parkingSpace: parkingSpace, startTime: DateTime.now(), stopTime: DateTime.now().add(Duration(hours: hours))));
+    parkingRepo.add(Parking(vehicle: vehicle!, parkingSpace: parkingSpace!, startTime: DateTime.now(), stopTime: DateTime.now().add(Duration(hours: hours))));
       break;
 
   case '5':
@@ -217,6 +239,10 @@ switch (choice) {
       print('Add new name:');
       String newName = stdin.readLineSync()!;
       person.name = newName;
+      personRepo.update(person);
+      print('Person updated successfully');
+    } else {
+      print('Person not found, try again');
     }
     break;
   case '7':
@@ -234,17 +260,37 @@ switch (choice) {
   case '8':
     print('Personal number for the person to remove:');
     String id = stdin.readLineSync()!;
-    personRepo.delete(id);
+    var person = personRepo.getById(id);
+
+    if (person != null){
+      personRepo.delete(id);
+      print('Person removed successfully.');
+    } else {
+      print('Person not found');
+    }
     break;
   case '9':
     print('Registration number for the vehicle to remove:');
     String regNum = stdin.readLineSync()!;
-    vehicleRepo.delete(regNum);
+    var vehicle = vehicleRepo.getById(regNum);
+
+    if (vehicle != null){
+      vehicleRepo.delete(regNum);
+      print('Vehicle removed successfully');
+    } else {
+      print('Vehicle not found');
+    }
     break;
   case '10':
     print('Registration number for the vehicle to remove from parking:');
     String regNum = stdin.readLineSync()!;
-    parkingRepo.delete(regNum);
+    var parking = parkingRepo.getById(regNum);
+    if (parking != null){
+      parkingRepo.delete(regNum);
+      print('Parking terminated');
+    } else {
+      print('Parking not found');
+    }
     break;
   case '11':
     return;
