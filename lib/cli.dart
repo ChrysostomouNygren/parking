@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:shelf/shelf.dart';
-import 'package:shelf/shelf_io.dart' as io;
 
 class Person {
   String name;
   final String idNum;
 
   Person({required this.name, required this.idNum});
+  Map<String, dynamic> toJson() => {'name' : name, 'idNum' : idNum};
 }
 
 class Vehicle {
@@ -72,6 +72,22 @@ class PersonRepo implements Repository<Person> {
   }
 
   void delete(String id) => _persons.removeWhere((p) => p.idNum == id);
+}
+final personRepo = PersonRepo();
+Future<Response> _handleRequest(Request request) async {
+  //GET
+  if (request.url.path == 'persons' && request.method == 'GET') {
+    return Response.ok(jsonEncode(personRepo.getAll()), headers: {'Content-Type' : 'applications/json'});
+  }
+  //POST
+  if (request.url.path == 'persons' && request.method == 'POST') {
+    var body = await request.readAsString();
+    var data = jsonDecode(body);
+    var person = Person(name: data['name'], idNum: data['idNum']);
+    personRepo.add(person);
+    return Response.ok(jsonEncode({'message': 'Person added'}), headers: {'Content-Type': 'application/json'});
+  }
+  return Response.notFound('Not found');
 }
 
 class VehicleRepo implements Repository<Vehicle> {
