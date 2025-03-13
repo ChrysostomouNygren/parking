@@ -1,10 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:school/cli.dart';
-import 'package:shelf/shelf_io.dart' as io;
-import 'package:shelf/shelf.dart';
-import 'package:shelf_router/shelf_router.dart' as shelf_router;
 
 
 void main() { 
