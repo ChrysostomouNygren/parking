@@ -12,5 +12,5 @@ class Vehicle {
   factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
   regNum: json['regNum'] ?? json['id'],
   vehicleType: json['vehicleType'], 
-  owner: json['owner']);
+  owner: Person.fromJson(json['owner']));
 }
