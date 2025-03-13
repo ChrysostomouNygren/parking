@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:school/models/parkingSpace.dart';
 import 'package:school/models/person.dart';
 import 'package:school/models/vehicle.dart';
+import 'package:school/repositories/parkingspace_repository.dart';
 import 'package:school/repositories/person_repository.dart';
 import 'package:school/repositories/vehicle_repository.dart';
 import 'package:shelf/shelf_io.dart' as io;
@@ -9,6 +11,7 @@ import 'package:shelf_router/shelf_router.dart' as shelf_router;
 
 final personRepo = PersonRepository();
 final vehicleRepo = VehicleRepository();
+final parkingSpaceRepo = ParkingSpaceRepository();
 
 final router = shelf_router.Router()
 //Persons
@@ -90,6 +93,46 @@ return Response.ok(jsonEncode({'message': 'Vehicle added'}), headers: {'Content-
 
   vehicleRepo.delete(id);
   return Response.ok(jsonEncode({'message': 'Vehicle removed'}), headers: {'Content-Type': 'application/json'});
+})
+//ParkingSpaces
+..get('/parkingspaces', (Request request) {
+  var parkiongSpaces = parkingSpaceRepo.getAll().map((p) => p.toJson()).toList();
+  return Response.ok(jsonEncode(parkiongSpaces), headers: {'Content-Type': 'application/json'});
+})
+..post('/parkingspaces', (Request request) async {
+var body = await request.readAsString();
+var data = jsonDecode(body);
+parkingSpaceRepo.add(ParkingSpace(id: data['id'], address: data['address'], pricePerH: data['pricePerH']));
+return Response.ok(jsonEncode({'message': 'Parking space added'}), headers: {'Content-Type': 'application/json'});
+})
+..get('/parkingspaces/<id>', (Request request, String id) {
+  var parkingSpace = parkingSpaceRepo.getById(id);
+  if (parkingSpace == null) {
+    return Response.notFound(jsonEncode({'error': 'Parking space not found, are you lost?'}), headers: {'Content-Type': 'application/json'});
+  }
+  return Response.ok(jsonEncode(parkingSpace.toJson()), headers: {'Content-Type': 'application/json'});
+})
+..put('/parkingspaces/<id>', (Request request, String id) async {
+  var existingParkingSpace = parkingSpaceRepo.getById(id);
+  if (existingParkingSpace == null){
+    return Response.notFound(jsonEncode({'error': 'Parking space not found'}), headers: {'Content-Type': 'application/json'});
+  }
+
+  var body = await request.readAsString();
+  var data = jsonDecode(body);
+  var updatedParkingSpace = ParkingSpace(id: id, address: data['address'], pricePerH: data['pricePerH']);
+  parkingSpaceRepo.update(updatedParkingSpace);
+
+  return Response.ok(jsonEncode({'message': 'Parking space updated'}), headers: {'Content-Type': 'application/json'});
+})
+..delete('/parkingspaces/<id>', (Request request, String id) {
+  var existingParkingSpace = parkingSpaceRepo.getById(id);
+  if (existingParkingSpace == null){
+    return Response.notFound(jsonEncode({'error': 'Parking space not found'}), headers: {'Content-Type': 'application/json'});
+  }
+
+  parkingSpaceRepo.delete(id);
+  return Response.ok(jsonEncode({'message': 'Parking space removed'}), headers: {'Content-Type': 'application/json'});
 });
 
 
