@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:school/models/person.dart';
+import 'package:school/models/vehicle.dart';
 import 'package:school/repositories/person_repository.dart';
 import 'package:school/repositories/vehicle_repository.dart';
 import 'package:shelf/shelf_io.dart' as io;
@@ -49,6 +50,46 @@ return Response.ok(jsonEncode({'message': 'Person added'}), headers: {'Content-T
 
   personRepo.delete(id);
   return Response.ok(jsonEncode({'message': 'Person removed'}), headers: {'Content-Type': 'application/json'});
+})
+//Vehicles
+..get('/vehicles', (Request request) {
+  var vehicles = vehicleRepo.getAll().map((v) => v.toJson()).toList();
+  return Response.ok(jsonEncode(vehicles), headers: {'Content-Type': 'application/json'});
+})
+..post('/vehicles', (Request request) async {
+var body = await request.readAsString();
+var data = jsonDecode(body);
+vehicleRepo.add(Vehicle(regNum: data['regNum'], vehicleType: data['vehicleType'], owner: data['owner']));
+return Response.ok(jsonEncode({'message': 'Vehicle added'}), headers: {'Content-Type': 'application/json'});
+})
+..get('/vehicles/<id>', (Request request, String id) {
+  var vehicle = vehicleRepo.getById(id);
+  if (vehicle == null) {
+    return Response.notFound(jsonEncode({'error': 'Vehicle not found'}), headers: {'Content-Type': 'application/json'});
+  }
+  return Response.ok(jsonEncode(vehicle.toJson()), headers: {'Content-Type': 'application/json'});
+})
+..put('/vehicles/<id>', (Request request, String id) async {
+  var existingVehicle = vehicleRepo.getById(id);
+  if (existingVehicle == null){
+    return Response.notFound(jsonEncode({'error': 'Vehicle not found'}), headers: {'Content-Type': 'application/json'});
+  }
+//is the id the same as regNum? investigate!
+  var body = await request.readAsString();
+  var data = jsonDecode(body);
+  var updatedVehicle = Vehicle(regNum: data['regNum'], vehicleType: data['vehicleType'], owner: data['owner']);
+  vehicleRepo.update(updatedVehicle);
+
+  return Response.ok(jsonEncode({'message': 'Vehicle updated'}), headers: {'Content-Type': 'application/json'});
+})
+..delete('/vehicles/<id>', (Request request, String id) {
+  var existingVehicle = vehicleRepo.getById(id);
+  if (existingVehicle == null){
+    return Response.notFound(jsonEncode({'error': 'Vehicle not found'}), headers: {'Content-Type': 'application/json'});
+  }
+
+  vehicleRepo.delete(id);
+  return Response.ok(jsonEncode({'message': 'Vehicle removed'}), headers: {'Content-Type': 'application/json'});
 });
 
 
