@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:school/models/parking.dart';
 import 'package:school/models/parkingSpace.dart';
 import 'package:school/models/person.dart';
 import 'package:school/models/vehicle.dart';
+import 'package:school/repositories/parking_repository.dart';
 import 'package:school/repositories/parkingspace_repository.dart';
 import 'package:school/repositories/person_repository.dart';
 import 'package:school/repositories/vehicle_repository.dart';
@@ -12,6 +14,7 @@ import 'package:shelf_router/shelf_router.dart' as shelf_router;
 final personRepo = PersonRepository();
 final vehicleRepo = VehicleRepository();
 final parkingSpaceRepo = ParkingSpaceRepository();
+final parkingRepo = ParkingRepository();
 
 final router = shelf_router.Router()
 //Persons
@@ -133,6 +136,46 @@ return Response.ok(jsonEncode({'message': 'Parking space added'}), headers: {'Co
 
   parkingSpaceRepo.delete(id);
   return Response.ok(jsonEncode({'message': 'Parking space removed'}), headers: {'Content-Type': 'application/json'});
+})
+// Parkings
+..get('/parkings', (Request request) {
+  var parkings = parkingRepo.getAll().map((p) => p.toJson()).toList();
+  return Response.ok(jsonEncode(parkings), headers: {'Content-Type': 'application/json'});
+})
+..post('/parkings', (Request request) async {
+var body = await request.readAsString();
+var data = jsonDecode(body);
+parkingRepo.add(Parking(vehicle: data['vehicle'], parkingSpace: data['parkingSpace'], startTime: data['startTime'], stopTime: data['stopTime']));
+return Response.ok(jsonEncode({'message': 'Parking added'}), headers: {'Content-Type': 'application/json'});
+})
+..get('/parkings/<id>', (Request request, String id) {
+  var parking = parkingRepo.getById(id);
+  if (parking == null) {
+    return Response.notFound(jsonEncode({'error': 'Parking not found'}), headers: {'Content-Type': 'application/json'});
+  }
+  return Response.ok(jsonEncode(parking.toJson()), headers: {'Content-Type': 'application/json'});
+})
+..put('/parkings/<id>', (Request request, String id) async {
+  var existingParking = parkingRepo.getById(id);
+  if (existingParking == null){
+    return Response.notFound(jsonEncode({'error': 'Parking not found'}), headers: {'Content-Type': 'application/json'});
+  }
+
+  var body = await request.readAsString();
+  var data = jsonDecode(body);
+  var updatedParking = Parking(vehicle: data['vehicle'], parkingSpace: data['parkingSpace'], startTime: data['startTime'], stopTime: data['stopTime']);
+  parkingRepo.update(updatedParking);
+
+  return Response.ok(jsonEncode({'message': 'Parking updated'}), headers: {'Content-Type': 'application/json'});
+})
+..delete('/parkings/<id>', (Request request, String id) {
+  var existingParking = parkingRepo.getById(id);
+  if (existingParking == null){
+    return Response.notFound(jsonEncode({'error': 'Parking not found'}), headers: {'Content-Type': 'application/json'});
+  }
+
+  personRepo.delete(id);
+  return Response.ok(jsonEncode({'message': 'Parking removed'}), headers: {'Content-Type': 'application/json'});
 });
 
 
