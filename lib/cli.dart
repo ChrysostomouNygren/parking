@@ -1,170 +1,24 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:school/repositories/person_repository.dart';
 import 'package:shelf/shelf.dart';
+
+//repositories
+import 'package:school/repositories/parking_repository.dart';
+import 'package:school/repositories/parkingspace_repository.dart';
+import 'package:school/repositories/person_repository.dart';
+import 'package:school/repositories/vehicle_repository.dart';
+
+//models
 import 'package:school/models/person.dart';
-
-class Personi {
-  String name;
-  final String idNum;
-
-  Personi({required this.name, required this.idNum});
-  Map<String, dynamic> toJson() => {'name' : name, 'idNum' : idNum};
-}
-
-class Vehicle {
-  final String regNum;
-  //car, bike, truck, lorry etc
-  String vehicleType;
-  Person owner;
-
-  Vehicle({required this.regNum, required this.vehicleType, required this.owner});
-}
-
-class ParkingSpace {
-  String id;
-  String address;
-  double pricePerH;
-
-  ParkingSpace({required this.id, required this.address, required this.pricePerH});
-}
-
-class Parking {
-Vehicle vehicle;
-ParkingSpace parkingSpace;
-DateTime startTime;
-DateTime stopTime;
-
-Parking({
-  required this.vehicle,
-  required this.parkingSpace,
-  required this.startTime,
-  required this.stopTime,
-});
-}
-
-abstract class Repository<T> {
-  void add(T item);
-  List<T> getAll();
-  T? getById(String id);
-  void update(T item);
-}
-
-class PersonRepo implements Repository<Person> {
-  final List<Person> _persons = [];
-  @override
-  void add(Person person) => _persons.add(person);
-
-  @override
-  List<Person> getAll() => _persons;
-
-  @override
-  Person? getById(String id) {
-    try {
-      return _persons.firstWhere((p) => p.idNum == id);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  @override
-  void update(Person person) {
-    var index = _persons.indexWhere((p) => p.idNum == person.idNum);
-    if (index != -1) _persons[index] = person;
-  }
-
-  void delete(String id) => _persons.removeWhere((p) => p.idNum == id);
-}
-final personRepo = PersonRepository();
-
-class VehicleRepo implements Repository<Vehicle> {
-  final List<Vehicle> _vehicles = [];
-
-  @override
-  void add(Vehicle vehicle) => _vehicles.add(vehicle);
-
-  @override
-  List<Vehicle> getAll() => _vehicles;
-
-  @override
-  Vehicle? getById(String id) {
-    try {
-      return _vehicles.firstWhere((p) => p.regNum == id);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  @override
-  void update(Vehicle vehicle){
-    var index = _vehicles.indexWhere((v) => v.regNum == vehicle.regNum);
-    if (index != -1) _vehicles[index] = vehicle;
-  }
-
-  void delete(String id) => _vehicles.removeWhere((v) => v.regNum == id);
-}
-
-class ParkingSpaceRepo implements Repository<ParkingSpace> {
-  final List<ParkingSpace> _parkingSpaces = [];
-
-  @override
-  void add(ParkingSpace parkingSpace) => _parkingSpaces.add(parkingSpace);
-
-  @override
-  List<ParkingSpace> getAll() => _parkingSpaces;
-
-  @override
-  //ParkingSpace getById(String id) => _parkingSpaces.firstWhere((p) => p.id == id);
-  ParkingSpace? getById(String id) {
-    try {
-      return _parkingSpaces.firstWhere((p) => p.id == id);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  @override
-  void update(ParkingSpace parkingSpace){
-    var index = _parkingSpaces.indexWhere((p) => p.id == parkingSpace.id);
-    if (index != -1) _parkingSpaces[index] = parkingSpace;
-  }
-
-  @override
-  void delete(String id) => _parkingSpaces.removeWhere((p) => p.id == id);
-}
-
-class ParkingRepo implements Repository<Parking> {
-  final List<Parking> _parkings = [];
-
-  @override
-  void add(Parking parking) => _parkings.add(parking);
-
-  @override
-  List<Parking> getAll() => _parkings;
-
-  @override
-  Parking? getById(String id) {
-    try {
-      return _parkings.firstWhere((p) => p.vehicle.regNum == id);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  @override
-  void update(Parking parking){
-    var index = _parkings.indexWhere((p) => p.vehicle.regNum == parking.vehicle.regNum);
-    if (index != -1) _parkings[index] = parking;
-  }
-
-  void delete(String id) => _parkings.removeWhere((p) => p.vehicle.regNum == id);
-}
+import 'package:school/models/vehicle.dart';
+import 'package:school/models/parkingSpace.dart';
+import 'package:school/models/parking.dart';
 
 void main(){
 var personRepo = PersonRepository();
-var vehicleRepo = VehicleRepo();
-var parkingSpaceRepo = ParkingSpaceRepo();
-var parkingRepo = ParkingRepo();
+var vehicleRepo = VehicleRepository();
+var parkingSpaceRepo = ParkingSpaceRepository();
+var parkingRepo = ParkingRepository();
 
 while(true){
 

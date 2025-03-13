@@ -1,14 +1,12 @@
-import 'package:school/cli.dart';
-
-class Parkingspace {
+class ParkingSpace {
   String id;
   String address;
   double pricePerH;
 
-  Parkingspace({required this.id, required this.address, required this.pricePerH});
+  ParkingSpace({required this.id, required this.address, required this.pricePerH});
   Map<String, dynamic> toJson() => {'id': id, 'address': address, 'pricePerH': pricePerH};
 
-  factory Parkingspace.fromJson(Map<String, dynamic> json) => Parkingspace(
+  factory ParkingSpace.fromJson(Map<String, dynamic> json) => ParkingSpace(
     id: json['id'], 
     address: json['address'], 
     pricePerH: json['pricePerH']);

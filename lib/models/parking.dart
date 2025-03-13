@@ -3,27 +3,27 @@ import 'package:school/models/vehicle.dart';
 
 class Parking {
   Vehicle vehicle;
-  Parkingspace parkingspace;
+  ParkingSpace parkingSpace;
   DateTime startTime;
   DateTime stopTime;
 
   Parking({
   required this.vehicle,
-  required this.parkingspace,
+  required this.parkingSpace,
   required this.startTime,
   required this.stopTime
   });
 
   Map<String, dynamic> toJson() => {
     'vehicle': vehicle,
-    'parkingspace': parkingspace,
+    'parkingspace': parkingSpace,
     'startTime': startTime,
     'stopTime': stopTime,
   };
 
   factory Parking.fromJson(Map<String, dynamic> json) => Parking(
     vehicle: json['vehicle'], 
-    parkingspace: json['parkingspace'], 
+    parkingSpace: json['parkingspace'], 
     startTime: json['startTime'], 
     stopTime: json['stopTime'],
     );
