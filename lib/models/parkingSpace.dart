@@ -9,5 +9,5 @@ class ParkingSpace {
   factory ParkingSpace.fromJson(Map<String, dynamic> json) => ParkingSpace(
     id: json['id'], 
     address: json['address'], 
-    pricePerH: json['pricePerH']);
+    pricePerH: (json['pricePerH'] as num).toDouble());
 }

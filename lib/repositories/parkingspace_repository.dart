@@ -46,7 +46,7 @@ class ParkingSpaceRepository {
   List<ParkingSpace> loadParkingSpacesFromFile() {
     final file = File('parkingSpaces.json');
     if (!file.existsSync()) return [];
-    final jsonList = jsonDecode(file.readAsStringSync());
+    final jsonList = jsonDecode(file.readAsStringSync()) as List;
     return jsonList.map((json) => ParkingSpace.fromJson(json)).toList();
   }
 }

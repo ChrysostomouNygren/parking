@@ -17,14 +17,14 @@ class Parking {
   Map<String, dynamic> toJson() => {
     'vehicle': vehicle,
     'parkingspace': parkingSpace,
-    'startTime': startTime,
-    'stopTime': stopTime,
+    'startTime': startTime.toIso8601String(),
+    'stopTime': stopTime.toIso8601String(),
   };
 
   factory Parking.fromJson(Map<String, dynamic> json) => Parking(
-    vehicle: json['vehicle'], 
-    parkingSpace: json['parkingspace'], 
-    startTime: json['startTime'], 
-    stopTime: json['stopTime'],
+    vehicle: Vehicle.fromJson(json['vehicle']), 
+    parkingSpace: ParkingSpace.fromJson(json['parkingspace']), 
+    startTime: DateTime.parse(json['startTime']), 
+    stopTime: DateTime.parse(json['stopTime']),
     );
 }
