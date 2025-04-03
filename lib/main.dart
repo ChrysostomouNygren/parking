@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:school/widgets/nav_bar.dart';
 
+import 'screens/home_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/vehicle_screen.dart';
+
 
 void main() { 
   runApp(const MyApp());
@@ -33,12 +37,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-// TODO: ScreenList
-//  final List<Widget> _screens = const [
-//    HomeScreen(),
-//    VehicleScreen(),
-//    ProfileScreen(),
-//  ];
+  final List<Widget> _screens = const [
+    HomeScreen(),
+    VehicleScreen(),
+    ProfileScreen(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -53,14 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Placeholder()
-          ],
-        ),
-      ),
+      body: _screens[_selectedIndex],
      bottomNavigationBar: NavBar(currentIndex: _selectedIndex,
      onTap: _onItemTapped,),
     );
