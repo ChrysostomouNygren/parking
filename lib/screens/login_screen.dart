@@ -1,0 +1,103 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+
+import 'home_screen.dart';
+
+class LoginScreen extends StatefulWidget {
+  final VoidCallback onLoginSuccess;
+
+  const LoginScreen({super.key, required this.onLoginSuccess});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _nameController = TextEditingController();
+  final _idController = TextEditingController();
+  bool _isLoading = false;
+
+  Future<void> _login() async {
+    final name = _nameController.text.trim();
+    final idNum = _idController.text.trim();
+    bool isIOS = Platform.isIOS;
+
+    if (name.isEmpty || idNum.isEmpty) {
+      _showError('Båda fälten måste fyllas i');
+      return;
+    }
+    setState(() => _isLoading = true);
+
+    try {
+      final url = isIOS ? Uri.parse("http://localhost:8080/persons") : Uri.parse("http://10.0.2.2:8080/persons");
+      final response = await http.get(url);
+
+      print('försöker logga in med $name och $idNum');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> persons = jsonDecode(response.body);
+
+        final match = persons.firstWhere((p) => p['name'] == name && p['idNum'] == idNum, orElse: () => null,);
+      print('personer mottagna: $persons');
+        if (match != null) {
+          print('ska ha funkat bitch');
+          // Obvious success
+          // Save in shared preferences library
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('isLoggedIn', true);
+          await prefs.setString('loggedUser', name);
+          await prefs.setString('loggedInUsereId', idNum);
+          widget.onLoginSuccess();
+          await Future.delayed(Duration(milliseconds: 300));
+          return;
+
+        } else {
+          print('nå fek');
+          _showError('Incorrect username or ID');
+        }
+      }
+      else {
+        _showError('Unable to connect to the server');
+      }
+    } catch (e) {
+      _showError('An issue appeared: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _showError(String message) {
+    showDialog(context: context, builder: (_) => AlertDialog(
+      // lol check spelling
+      title: const Text('Login unsuccesful'),
+      content: Text(message),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))
+      ],
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          const Text('Log in'),
+          TextFormField(
+            controller: _nameController,
+            decoration: const InputDecoration(labelText: 'User name'),
+          ),
+          TextFormField(controller: _idController, decoration: InputDecoration(labelText: 'ID number'), obscureText: true,),
+          _isLoading ? const CircularProgressIndicator()
+          : ElevatedButton(onPressed: _login, child: const Text('Log in')),
+        ],
+      ),
+      
+    );
+  }
+}
