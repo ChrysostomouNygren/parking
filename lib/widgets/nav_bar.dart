@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class NavBar extends StatelessWidget {
-  int currentIndex;
-  Function(int) onTap;
-  NavBar({super.key, required this.currentIndex, required this.onTap});
+  final int currentIndex;
+  final Function(int) onTap;
+  const NavBar({super.key, required this.currentIndex, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
