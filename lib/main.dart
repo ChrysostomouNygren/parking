@@ -21,11 +21,11 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool? _isLoggedIn;
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   final List<Widget> _screens = const [
-    HomeScreen(),
     VehicleScreen(),
+    HomeScreen(),
     ProfileScreen(),
   ];
 
@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
     await prefs.clear();
     setState(() {
       _isLoggedIn = false;
-      _selectedIndex = 0;
+      _selectedIndex = 1;
     });
   }
 
