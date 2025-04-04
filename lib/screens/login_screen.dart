@@ -37,15 +37,11 @@ class _LoginScreenState extends State<LoginScreen> {
       final url = isIOS ? Uri.parse("http://localhost:8080/persons") : Uri.parse("http://10.0.2.2:8080/persons");
       final response = await http.get(url);
 
-      print('försöker logga in med $name och $idNum');
-
       if (response.statusCode == 200) {
         final List<dynamic> persons = jsonDecode(response.body);
 
         final match = persons.firstWhere((p) => p['name'] == name && p['idNum'] == idNum, orElse: () => null,);
-      print('personer mottagna: $persons');
         if (match != null) {
-          print('ska ha funkat bitch');
           // Obvious success
           // Save in shared preferences library
           final prefs = await SharedPreferences.getInstance();
@@ -57,7 +53,6 @@ class _LoginScreenState extends State<LoginScreen> {
           return;
 
         } else {
-          print('nå fek');
           _showError('Incorrect username or ID');
         }
       }
@@ -85,17 +80,27 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const Text('Log in'),
-          TextFormField(
-            controller: _nameController,
-            decoration: const InputDecoration(labelText: 'User name'),
-          ),
-          TextFormField(controller: _idController, decoration: InputDecoration(labelText: 'ID number'), obscureText: true,),
-          _isLoading ? const CircularProgressIndicator()
-          : ElevatedButton(onPressed: _login, child: const Text('Log in')),
-        ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return
+          Center(
+            child: ConstrainedBox(constraints: const BoxConstraints(
+              maxWidth: 500
+            ),
+            child: Padding(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+            child: SingleChildScrollView(child: Column(
+            children: [
+              const Text('Log in'),
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'User name'),
+              ),
+              TextFormField(controller: _idController, decoration: InputDecoration(labelText: 'ID number'), obscureText: true,),
+              _isLoading ? const CircularProgressIndicator()
+              : ElevatedButton(onPressed: _login, child: const Text('Log in')),
+            ],
+                    ),),),),);
+          }
       ),
       
     );
