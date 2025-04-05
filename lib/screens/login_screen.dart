@@ -60,7 +60,9 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       _showError('An issue appeared: $e');
     } finally {
+      if (mounted) {
       setState(() => _isLoading = false);
+      }
     }
   }
 
